@@ -27,7 +27,7 @@ Response Time(ms): Max = 794, Min = 120, Avg = 402.24
 
 ### Request Log
 siege-crawler will generate a complete log in current directory listed all the requested urls, status and response time in real order.
-```sh
+```log
  Status | Time(ms) | URL
      OK |      326 | https://google.com
      OK |      332 | https://google.com

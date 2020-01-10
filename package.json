@@ -1,6 +1,6 @@
 {
   "name": "siege-crawler",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This CLI tool will find same domain urls in a web page and requesting them to find even more urls until server crash (or at the end of benchmark). It is used to test maximun capacity of server or finding for glitches that users might encounter.",
   "main": "index.js",
   "scripts": {
