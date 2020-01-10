@@ -6,6 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "siege-crawler": "./index.js"
+  },
+  "preferGlobal": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/scrwdrv/siege-crawler.git"
@@ -25,5 +29,14 @@
   "bugs": {
     "url": "https://github.com/scrwdrv/siege-crawler/issues"
   },
-  "homepage": "https://github.com/scrwdrv/siege-crawler#readme"
+  "homepage": "https://github.com/scrwdrv/siege-crawler#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.15",
+    "@types/node": "^13.1.6",
+    "@types/request": "^2.48.4"
+  }
 }

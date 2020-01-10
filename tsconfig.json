@@ -6,7 +6,8 @@
         "alwaysStrict": true,
         "declaration": true,
         "lib": [
-            "esnext"
+            "esnext",
+            "DOM"
         ],
         "outDir": "./"
     },
