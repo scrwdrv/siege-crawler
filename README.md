@@ -10,11 +10,12 @@ npm i -g siege-crawler
 ## Usage
 ```sh
 siege-crawler https://google.com 
-##requesting `https://google.com` with default rate 50/sec until ^c is fired
+# requesting `https://google.com` with default rate 50/sec until ^c is fired
 ```
 ```sh
 siege-crawler --duration 5 --rate 10 https://google.com 
-##requesting `https://google.com` with custom rate 10/sec for 5 secs or ^c is fired
+# or          -d 5 -r 10
+# requesting `https://google.com` with custom rate 10/sec for 5 secs or ^c is fired
 ```
 
 ### Skip Specific URLs
