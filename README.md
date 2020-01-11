@@ -17,52 +17,51 @@ siege-crawler --duration 5 --rate 10 https://google.com
 ##requesting `https://google.com` with custom rate 10/sec for 5 secs or ^c is fired
 ```
 
+### Skip Specific URLs
+Rule out urls by regular expression. Notice, regex will match **full url** not just path. 
+```sh
+siege-crawler --ruleout /google\.com\/search/ https://google.com 
+```
+```sh
+siege-crawler --ruleout /^https://google\.com\/search\?.+$/i https://google.com 
+```
 ### Ouput
 ```sh
-[google.com] rate: 10/sec, duration: 5 secs
+[google.com] rate: 5/sec, duration: 5 secs, ruleout: /google\.com\/search/i
 
-Sent: 49, Received: 49, Lost: 0 (0.00% loss)
-Response Time(ms): Max = 794, Min = 120, Avg = 402.24
+Sent: 26, Received: 26, Lost: 0 (0.00% loss)
+Data received: 5,614,377 bytes
+Response Time(ms): Max = 544, Min = 219, Avg = 311.00
 ```
 
 ### Request Log
 siege-crawler will generate a complete log in current directory listed all the requested urls, status and response time in real order.
 ```log
  Status | Time(ms) | URL
-     OK |      326 | https://google.com
-     OK |      332 | https://google.com
-     OK |      569 | https://google.com/
-     OK |      591 | https://google.com/advanced_search?hl=en-US&fg=1
-     OK |      794 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
-     OK |      657 | https://google.com/history/optout?hl=en-US&fg=1
-     OK |      377 | https://google.com/search/howsearchworks/?fg=1
-     OK |      574 | https://google.com
-     OK |      511 | https://google.com/
-     OK |      519 | https://google.com/advanced_search?hl=en-US&fg=1
-     OK |      602 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
-     OK |      623 | https://google.com/history/optout?hl=en-US&fg=1
-     OK |      336 | https://google.com/search/howsearchworks/?fg=1
-     OK |      397 | https://google.com
-     OK |      368 | https://google.com/
-     OK |      392 | https://google.com/webhp?tab=ww
-     OK |      389 | https://google.com/preferences?hl=en-US
-     OK |      371 | https://google.com/advanced_search?hl=en-US&fg=1
-     OK |      315 | https://google.com/search/howsearchworks/
-     OK |      293 | https://google.com/search/howsearchworks/crawling-indexing/
-     OK |      257 | https://google.com/search/howsearchworks/algorithms/
-     OK |      177 | https://google.com/search/howsearchworks/responses/
-     OK |      171 | https://google.com/search/howsearchworks/mission/
-     OK |      157 | https://google.com/search/howsearchworks/mission/users/
-     OK |      149 | https://google.com/search/howsearchworks/mission/creators/
-     OK |      120 | https://google.com/search/howsearchworks/mission/open-web/
-     OK |      422 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
-     OK |      455 | https://google.com/history/optout?hl=en-US&fg=1
-     OK |      465 | https://google.com/history/optout?utm_source=search-privacy-advisor
-     OK |      287 | https://google.com/search/howsearchworks/?fg=1
-     OK |      345 | https://google.com
-     OK |      326 | https://google.com/
-     OK |      358 | https://google.com/webhp?tab=ww
-     OK |      428 | https://google.com/preferences?hl=en-US
-
-     ...
+     OK |      284 | https://google.com
+     OK |      339 | https://google.com
+     OK |      234 | https://google.com
+     OK |      304 | https://google.com/
+     OK |      246 | https://google.com/advanced_search?hl=en-US&fg=1
+     OK |      396 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
+     OK |      319 | https://google.com/history/optout?hl=en-US&fg=1
+     OK |      219 | https://google.com
+     OK |      283 | https://google.com/
+     OK |      246 | https://google.com/advanced_search?hl=en-US&fg=1
+     OK |      485 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
+     OK |      265 | https://google.com/webhp?tab=ww
+     OK |      318 | https://google.com/preferences?hl=en-US
+     OK |      309 | https://google.com/history/optout?hl=en-US&fg=1
+     OK |      265 | https://google.com/history/optout?utm_source=search-privacy-advisor
+     OK |      230 | https://google.com
+     OK |      265 | https://google.com/
+     OK |      235 | https://google.com/advanced_search?hl=en-US&fg=1
+     OK |      416 | https://google.com/history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1
+     OK |      298 | https://google.com/webhp?tab=ww
+     OK |      305 | https://google.com/preferences?hl=en-US
+     OK |      301 | https://google.com/history/optout?hl=en-US&fg=1
+     OK |      241 | https://google.com/webhp
+     OK |      544 | https://google.com/support/websearch?p=ws_cookies_notif&hl=en-US
+     OK |      265 | https://google.com/history/optout?hl=en-US
+     OK |      474 | https://google.com/intl/en-US/help.html
 ```

@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
 const cheerio = require("cheerio");
+const regex = require("simple-regex-toolkit");
 const fs = require("fs");
 const options = parseArgs(), regs = {
     chinese: /(\p{Script=Hani})+/u,
@@ -12,7 +13,8 @@ let result = {
     sent: 0,
     received: 0,
     lost: 0,
-    time: [0, Infinity, 0]
+    time: [0, Infinity, 0],
+    bytes: 0
 }, uris = [options.uri], paused = false, history = [];
 process.on('SIGINT', () => {
     if (!paused) {
@@ -38,6 +40,7 @@ process.on('SIGINT', () => {
 })();
 function printResult() {
     console.log(`\nSent: ${result.sent}, Received: ${result.received}, Lost: ${result.lost} (${(result.lost / result.sent * 100).toFixed(2)}% loss)`);
+    console.log(`Data received: ${formatInt(result.bytes)} bytes`);
     console.log(`Response Time(ms): Max = ${result.time[0]}, Min = ${result.time[1]}, Avg = ${(result.time[2] / result.sent).toFixed(2)}`);
     const timestamp = Date.now();
     fs.appendFileSync(`siege-crawler_${timestamp}.log`, ` Status | Time(ms) | URL\n`);
@@ -67,6 +70,7 @@ function siege(uri) {
         result.time[2] += dt;
         if (!body)
             return;
+        result.bytes += body.length;
         const $ = cheerio.load(body), URI = new URL(uri);
         let BASE;
         try {
@@ -88,8 +92,11 @@ function siege(uri) {
                     target.hostname = URI.hostname;
                     if (regs.excludeExtensions.test(target.pathname))
                         return;
-                    if (uris.indexOf(target.href) === -1)
+                    if (uris.indexOf(target.href) === -1) {
+                        if (options.ruleout && options.ruleout.test(target.href))
+                            return;
                         uris.push(target.href);
+                    }
                 }
             }
             catch (err) {
@@ -125,7 +132,8 @@ function parseArgs() {
     let args = process.argv.slice(2), options = {
         uri: args.pop(),
         rate: 50,
-        duration: 0
+        duration: 0,
+        ruleout: null
     };
     if (!options.uri || !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri))
         throw `Invalid URL: ${options.uri}`;
@@ -145,10 +153,17 @@ function parseArgs() {
                     throw `Invalid duration: ${args[i + 1]}`;
                 i++;
                 break;
+            case '--ruleout':
+                if (regex.isRegex(args[i + 1]))
+                    options.ruleout = regex.from(args[i + 1]);
+                else
+                    throw `Invalid ruleout regex: ${args[i + 1]}`;
+                i++;
+                break;
             default:
                 throw `Unknown parameter: ${args[i]}`;
         }
-    console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs`);
+    console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
     options.rate = 1000 / options.rate;
     options.duration = options.duration * 1000;
     return options;
@@ -168,4 +183,10 @@ function get(uri, cb) {
             return cb(`Status Code: ${res.statusCode}`);
         cb(null, body);
     });
+}
+function formatInt(n) {
+    let str = n.toString(), r = '';
+    for (let i = 0, l = str.length; i < l; i++)
+        r += ((l - i) % 3 ? '' : (i ? ',' : '')) + str[i];
+    return r;
 }
