@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
 const cheerio = require("cheerio");
 const regex = require("simple-regex-toolkit");
+const cli_params_1 = require("cli-params");
 const fs = require("fs");
 const options = parseArgs(), regs = {
     chinese: /(\p{Script=Hani})+/u,
@@ -129,40 +130,30 @@ function siege(uri) {
     });
 }
 function parseArgs() {
-    let args = process.argv.slice(2), options = {
-        uri: args.pop(),
-        rate: 50,
-        duration: 0,
-        ruleout: null
-    };
-    if (!options.uri || !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri))
+    let options = cli_params_1.default([{
+            param: 'rate',
+            type: 'float',
+            optional: true,
+            alias: 'r'
+        }, {
+            param: 'duration',
+            type: 'int',
+            optional: true,
+            alias: 'd'
+        }, {
+            param: 'ruleout',
+            type: 'string',
+            optional: true
+        }], 'uri');
+    options.rate = options.rate || 50;
+    options.duration = options.duration || 0;
+    if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri))
         throw `Invalid URL: ${options.uri}`;
-    for (let i = 0; i < args.length; i++)
-        switch (args[i]) {
-            case '--rate':
-                if (/^\d+(\.\d+)?$/.test(args[i + 1]))
-                    options.rate = parseFloat(args[i + 1]);
-                else
-                    throw `Invalid rate: ${args[i + 1]}`;
-                i++;
-                break;
-            case '--duration':
-                if (/^\d+(\.\d+)?$/.test(args[i + 1]))
-                    options.duration = parseFloat(args[i + 1]);
-                else
-                    throw `Invalid duration: ${args[i + 1]}`;
-                i++;
-                break;
-            case '--ruleout':
-                if (regex.isRegex(args[i + 1]))
-                    options.ruleout = regex.from(args[i + 1]);
-                else
-                    throw `Invalid ruleout regex: ${args[i + 1]}`;
-                i++;
-                break;
-            default:
-                throw `Unknown parameter: ${args[i]}`;
-        }
+    if (options.ruleout)
+        if (regex.isRegex(options.ruleout))
+            options.ruleout = regex.from(options.ruleout);
+        else
+            throw `Invalid ruleout regex: ${options.ruleout}`;
     console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
     options.rate = 1000 / options.rate;
     options.duration = options.duration * 1000;

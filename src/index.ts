@@ -170,6 +170,10 @@ function parseArgs() {
 
     if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
 
+    if (options.ruleout)
+        if (regex.isRegex(options.ruleout))
+            options.ruleout = regex.from(options.ruleout);
+        else throw `Invalid ruleout regex: ${options.ruleout}`;
 
     console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
 
