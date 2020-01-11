@@ -153,19 +153,21 @@ function parseArgs() {
             param: 'rate',
             type: 'float',
             optional: true,
-            default: 50,
             alias: 'r'
         }, {
             param: 'duration',
             type: 'int',
             optional: true,
-            default: 0,
             alias: 'd'
         }, {
             param: 'ruleout',
             type: 'string',
             optional: true
         }], 'uri');
+
+
+    if (!options.rate) options.rate = 50;
+    if (!options.duration) options.duration = 0;
 
     if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
 
