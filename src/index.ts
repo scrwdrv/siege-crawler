@@ -2,6 +2,7 @@
 import * as request from 'request';
 import * as cheerio from 'cheerio';
 import * as regex from 'simple-regex-toolkit';
+import cliParams from 'cli-params';
 import * as fs from 'fs';
 
 const options = parseArgs(),
@@ -146,39 +147,29 @@ function siege(uri: string) {
 }
 
 function parseArgs() {
-    let args = process.argv.slice(2),
-        options = {
-            uri: args.pop(),
-            rate: 50,
-            duration: 0,
-            ruleout: null
-        };
 
-    if (!options.uri || !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
+    let options =
+        cliParams([{
+            param: 'rate',
+            type: 'float',
+            optional: true,
+            alias: 'r'
+        }, {
+            param: 'duration',
+            type: 'int',
+            optional: true,
+            alias: 'd'
+        }, {
+            param: 'ruleout',
+            type: 'string',
+            optional: true
+        }], 'uri');
 
-    for (let i = 0; i < args.length; i++)
-        switch (args[i]) {
-            case '--rate':
-                if (/^\d+(\.\d+)?$/.test(args[i + 1]))
-                    options.rate = parseFloat(args[i + 1]);
-                else throw `Invalid rate: ${args[i + 1]}`;
-                i++;
-                break;
-            case '--duration':
-                if (/^\d+(\.\d+)?$/.test(args[i + 1]))
-                    options.duration = parseFloat(args[i + 1]);
-                else throw `Invalid duration: ${args[i + 1]}`;
-                i++;
-                break;
-            case '--ruleout':
-                if (regex.isRegex(args[i + 1]))
-                    options.ruleout = regex.from(args[i + 1]);
-                else throw `Invalid ruleout regex: ${args[i + 1]}`;
-                i++;
-                break;
-            default:
-                throw `Unknown parameter: ${args[i]}`;
-        }
+    options.rate = options.rate || 50;
+    options.duration = options.duration || 0;
+
+    if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
+
 
     console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
 
