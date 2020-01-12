@@ -144,7 +144,10 @@ function parseArgs() {
             param: 'ruleout',
             type: 'string',
             optional: true
-        }], 'uri');
+        }], {
+        param: 'uri',
+        type: 'string'
+    });
     if (!options.rate)
         options.rate = 50;
     if (!options.duration)
