@@ -148,8 +148,7 @@ parseArgs((options) => {
 });
 
 function parseArgs(callback: (options: { [key: string]: any }) => void) {
-    const cliParams = new CLIParams();
-    cliParams.add({
+    new CLIParams().add({
         params: [
             {
                 param: 'rate',
@@ -171,27 +170,25 @@ function parseArgs(callback: (options: { [key: string]: any }) => void) {
             param: 'uri',
             type: 'string'
         }
-    }, () => {
-        cliParams.exec((err, options) => {
-            if (err) throw err;
+    }).exec((err, options) => {
+        if (err) throw err;
 
-            if (!options.rate) options.rate = 50;
-            if (!options.duration) options.duration = 0;
+        if (!options.rate) options.rate = 50;
+        if (!options.duration) options.duration = 0;
 
-            if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
+        if (!/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(options.uri)) throw `Invalid URL: ${options.uri}`;
 
-            if (options.ruleout)
-                if (regex.isRegex(options.ruleout))
-                    options.ruleout = regex.from(options.ruleout);
-                else throw `Invalid ruleout regex: ${options.ruleout}`;
+        if (options.ruleout)
+            if (regex.isRegex(options.ruleout))
+                options.ruleout = regex.from(options.ruleout);
+            else throw `Invalid ruleout regex: ${options.ruleout}`;
 
-            console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
+        console.log(`\n[${new URL(options.uri).hostname}] rate: ${options.rate}/sec, duration: ${options.duration} secs, ruleout: ${options.ruleout}`);
 
-            options.rate = 1000 / options.rate;
-            options.duration = options.duration * 1000;
+        options.rate = 1000 / options.rate;
+        options.duration = options.duration * 1000;
 
-            callback(options);
-        });
+        callback(options);
     });
 }
 
